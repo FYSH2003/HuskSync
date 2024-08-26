@@ -30,11 +30,9 @@ import net.kyori.adventure.text.format.TextColor;
 import net.william278.desertwell.about.AboutMenu;
 import net.william278.desertwell.util.UpdateChecker;
 import net.william278.husksync.HuskSync;
-import net.william278.husksync.data.DataSnapshot;
 import net.william278.husksync.database.Database;
 import net.william278.husksync.migrator.Migrator;
 import net.william278.husksync.user.CommandUser;
-import net.william278.husksync.util.LegacyConverter;
 import net.william278.uniform.BaseCommand;
 import net.william278.uniform.CommandProvider;
 import net.william278.uniform.Permission;
@@ -42,10 +40,8 @@ import net.william278.uniform.element.ArgumentElement;
 import org.apache.commons.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -100,7 +96,7 @@ public class HuskSyncCommand extends PluginCommand {
         command.addSubCommand("status", needsOp("status"), status());
         command.addSubCommand("reload", needsOp("reload"), reload());
         command.addSubCommand("update", needsOp("update"), update());
-        command.addSubCommand("forceupgrade", forceUpgrade());
+        command.addSubCommand("forceupgrade", needsOp("forceupgrade"), forceUpgrade());
         command.addSubCommand("migrate", migrate());
     }
 
@@ -189,31 +185,15 @@ public class HuskSyncCommand extends PluginCommand {
 
     @NotNull
     private CommandProvider forceUpgrade() {
-        return (sub) -> {
-            sub.setCondition((ctx) -> sub.getUser(ctx).isConsole());
-            sub.setDefaultExecutor((ctx) -> {
-                final LegacyConverter converter = plugin.getLegacyConverter().orElse(null);
-                if (converter == null) {
-                    return;
-                }
-
-                plugin.runAsync(() -> {
-                    final Database database = plugin.getDatabase();
-                    plugin.log(Level.INFO, "Beginning forced legacy data upgrade for all users...");
-                    database.getAllUsers().forEach(user -> database.getLatestSnapshot(user).ifPresent(snapshot -> {
-                        final DataSnapshot.Packed upgraded = converter.convert(
-                                snapshot.asBytes(plugin),
-                                UUID.randomUUID(),
-                                OffsetDateTime.now()
-                        );
-                        upgraded.setSaveCause(DataSnapshot.SaveCause.CONVERTED_FROM_V2);
-                        plugin.getDatabase().addSnapshot(user, upgraded);
-                        plugin.getRedisManager().clearUserData(user);
-                    }));
-                    plugin.log(Level.INFO, "Legacy data upgrade complete!");
-                });
-            });
-        };
+        return (sub) -> sub.setDefaultExecutor((ctx) -> plugin.runAsync(() -> {
+            final Database database = plugin.getDatabase();
+            plugin.log(Level.INFO, "Beginning forced legacy data upgrade for all users...");
+            database.getAllUsers().forEach(user -> database.getLatestSnapshot(user).ifPresent(snapshot -> {
+                plugin.getDatabase().addSnapshot(user, snapshot.copy());
+                plugin.getRedisManager().clearUserData(user);
+            }));
+            plugin.log(Level.INFO, "Legacy data upgrade complete!");
+        }));
     }
 
     @NotNull
