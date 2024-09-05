@@ -49,6 +49,7 @@ import net.william278.desertwell.util.ThrowingConsumer;
 import net.william278.husksync.FabricHuskSync;
 import net.william278.husksync.HuskSync;
 import net.william278.husksync.adapter.Adaptable;
+import net.william278.husksync.config.Settings.SynchronizationSettings.AttributeSettings;
 import net.william278.husksync.user.FabricUser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -576,10 +577,11 @@ public abstract class FabricData implements Data {
         @NotNull
         public static FabricData.Attributes adapt(@NotNull ServerPlayerEntity player, @NotNull HuskSync plugin) {
             final List<Attribute> attributes = Lists.newArrayList();
+            final AttributeSettings settings = plugin.getSettings().getSynchronization().getAttributes();
             Registries.ATTRIBUTE.forEach(id -> {
                 final EntityAttributeInstance instance = player.getAttributeInstance(id);
                 final Identifier key = Registries.ATTRIBUTE.getId(id);
-                if (instance == null || key == null) {
+                if (instance == null || key == null || settings.isIgnoredAttribute(key.asString())) {
                     return;
                 }
                 final Set<Modifier> modifiers = Sets.newHashSet();
@@ -615,11 +617,17 @@ public abstract class FabricData implements Data {
 
         @Override
         protected void apply(@NotNull FabricUser user, @NotNull FabricHuskSync plugin) {
-            Registries.ATTRIBUTE.forEach(id -> applyAttribute(
-                    user.getPlayer().getAttributeInstance(id),
-                    getAttribute(id).orElse(null)
-            ));
-
+            final AttributeSettings settings = plugin.getSettings().getSynchronization().getAttributes();
+            Registries.ATTRIBUTE.forEach(id -> {
+                final Identifier key = Registries.ATTRIBUTE.getId(id);
+                if (key == null || settings.isIgnoredAttribute(key.toString())) {
+                    return;
+                }
+                applyAttribute(
+                        user.getPlayer().getAttributeInstance(id),
+                        getAttribute(id).orElse(null)
+                );
+            });
         }
 
         private static void applyAttribute(@Nullable EntityAttributeInstance instance,
@@ -627,8 +635,8 @@ public abstract class FabricData implements Data {
             if (instance == null) {
                 return;
             }
-            instance.setBaseValue(attribute == null ? instance.getAttribute().getDefaultValue() : attribute.baseValue());
             instance.getModifiers().forEach(instance::removeModifier);
+            instance.setBaseValue(attribute == null ? instance.getValue() : attribute.baseValue());
             if (attribute != null) {
                 attribute.modifiers().forEach(modifier -> instance.addPersistentModifier(new EntityAttributeModifier(
                         modifier.uuid(),
