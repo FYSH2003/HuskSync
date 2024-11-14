@@ -94,7 +94,7 @@ public abstract class FabricSerializer {
         public String serialize(@NotNull FabricData.Items.Inventory data) throws SerializationException {
             try {
                 final NbtCompound root = new NbtCompound();
-                root.put(ITEMS_TAG, serializeItemArray(data.getContents(), (FabricHuskSync) getPlugin()));
+                root.put(ITEMS_TAG, serializeItemArray(data.getContents()));
                 root.putInt(HELD_ITEM_SLOT_TAG, data.getHeldItemSlot());
                 return root.toString();
             } catch (Throwable e) {
@@ -132,7 +132,7 @@ public abstract class FabricSerializer {
         @Override
         public String serialize(@NotNull FabricData.Items.EnderChest data) throws SerializationException {
             try {
-                return serializeItemArray(data.getContents(), (FabricHuskSync) getPlugin()).toString();
+                return serializeItemArray(data.getContents()).toString();
             } catch (Throwable e) {
                 throw new SerializationException("Failed to serialize ender chest item NBT to string", e);
             }
