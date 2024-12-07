@@ -359,7 +359,6 @@ public class FabricHuskSync implements DedicatedServerModInitializer, HuskSync, 
         return Version.fromString(minecraftServer.getVersion());
     }
 
-    @NotNull
     public int getDataVersion(@NotNull Version mcVersion) {
         return switch (mcVersion.toStringWithoutMetadata()) {
             case "1.16", "1.16.1", "1.16.2", "1.16.3", "1.16.4", "1.16.5" -> VERSION1_16_5;
@@ -368,12 +367,7 @@ public class FabricHuskSync implements DedicatedServerModInitializer, HuskSync, 
             case "1.19", "1.19.1", "1.19.2" -> VERSION1_19_2;
             case "1.19.4" -> VERSION1_19_4;
             case "1.20", "1.20.1" -> VERSION1_20_1;
-            case "1.20.2" -> VERSION1_20_2;
-            case "1.20.4" -> VERSION1_20_4;
-            case "1.20.5", "1.20.6" -> VERSION1_20_5;
-            case "1.21", "1.21.1" -> VERSION1_21_1;
-            case "1.21.2", "1.21.3" -> VERSION1_21_3;
-            default -> VERSION1_21_3; // Current supported ver
+            default -> VERSION1_20_1; // Current supported ver
         };
     }
 
