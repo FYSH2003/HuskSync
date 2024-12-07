@@ -93,8 +93,7 @@ public class FabricHuskSync implements DedicatedServerModInitializer, HuskSync, 
     private static final int VERSION1_20_2 = 3578;
     private static final int VERSION1_20_4 = 3700;
     private static final int VERSION1_20_5 = 3837;
-    private static final int VERSION1_21_1 = 3955;
-    private static final int VERSION1_21_3 = 4082; // Current
+    private static final int VERSION1_21_1 = 3955; // Current
 
     private final TreeMap<Identifier, Serializer<? extends Data>> serializers = Maps.newTreeMap(
             SerializerRegistry.DEPENDENCY_ORDER_COMPARATOR
@@ -372,8 +371,7 @@ public class FabricHuskSync implements DedicatedServerModInitializer, HuskSync, 
             case "1.20.4" -> VERSION1_20_4;
             case "1.20.5", "1.20.6" -> VERSION1_20_5;
             case "1.21", "1.21.1" -> VERSION1_21_1;
-            case "1.21.2", "1.21.3" -> VERSION1_21_3;
-            default -> VERSION1_21_3; // Current supported ver
+            default -> VERSION1_21_1; // Current supported ver
         };
     }
 
