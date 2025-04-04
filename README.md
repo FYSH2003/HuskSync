@@ -97,7 +97,7 @@ Translations of the plugin locales are welcome to help make the plugin more acce
 - [Locales Directory](https://github.com/WiIIiam278/HuskSync/tree/master/common/src/main/resources/locales)
 - [English Locales](https://github.com/WiIIiam278/HuskSync/tree/master/common/src/main/resources/locales/en-gb.yml)
 
-## Links
+## Links（添加）
 - [Docs](https://william278.net/docs/husksync/) &mdash; Read the plugin documentation!
 - [Spigot](https://www.spigotmc.org/resources/husksync.97144/) &mdash; View the Spigot resource page (Also: [Polymart](https://polymart.org/resource/husksync.1634), [Craftaro](https://craftaro.com/marketplace/product/husksync.758), [BuiltByBit](https://builtbybit.com/resources/husksync.34956/))
 - [Issues](https://github.com/WiIIiam278/HuskSync/issues) &mdash; File a bug report or feature request
