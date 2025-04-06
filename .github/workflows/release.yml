@@ -31,39 +31,10 @@ jobs:
         if: success() || failure() # Continue on failure
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
-      - name: 'Publish to William278.net 🚀'
-        uses: WiIIiam278/bones-publish-action@v1
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          api-key: ${{ secrets.BONES_API_KEY }}
-          project: 'husksync'
-          channel: 'release'
-          version: ${{ github.event.release.tag_name }}
-          changelog: ${{ github.event.release.body }}
-          distro-names: |
-            paper-1.20.1
-            paper-1.21.1
-            paper-1.21.4
-            fabric-1.20.1
-            fabric-1.21.1
-            fabric-1.21.4
-          distro-groups: |
-            paper
-            paper
-            paper
-            fabric
-            fabric
-            fabric
-          distro-descriptions: |
-            Paper 1.20.1
-            Paper 1.21.1
-            Paper 1.21.4
-            Fabric 1.20.1
-            Fabric 1.21.1
-            Fabric 1.21.4
           files: |
-            target/HuskSync-Bukkit-${{ github.event.release.tag_name }}+mc.1.20.1.jar
-            target/HuskSync-Bukkit-${{ github.event.release.tag_name }}+mc.1.21.1.jar
-            target/HuskSync-Bukkit-${{ github.event.release.tag_name }}+mc.1.21.4.jar
-            target/HuskSync-Fabric-${{ github.event.release.tag_name }}+mc.1.20.1.jar
-            target/HuskSync-Fabric-${{ github.event.release.tag_name }}+mc.1.21.1.jar
-            target/HuskSync-Fabric-${{ github.event.release.tag_name }}+mc.1.21.4.jar
+            **/build/libs/*.jar
+          tag_name: ${{ github.event.release.tag_name }}
+          body: ${{ github.event.release.body }}
